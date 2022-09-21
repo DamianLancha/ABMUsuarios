@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+  
+{% block title %}Buscar Usuarios{% endblock %}
+  
+{% block content %}
+<h1 class="col-lg-3 mb-5 mb-lg-2">Buscar Usuarios</h1>
+
+<div class="row g-0 align-items-center">
+    <div class="col-lg-3 mb-5 mb-lg-0">
+
+        <form action="{{ url_for('search') }}" method="post" autocomplete="off" class="main-login main-center "> 
+            
+                <div class="form-group">
+                <label for="name" class="cols-sm-2 control-label">Apellido y Nombre</label>
+                <div class="cols-sm-10">
+                <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" name="apellidoynombre" id="apellidoynombre"  placeholder="Apellido y Nombre" />
+                </div>
+                </div>
+                </div>
+
+                <div class="form-group ">
+                    {% with messages = get_flashed_messages()  %}
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                    <input type="submit" value="Buscar" class="form-control btn btn-primary " name="">
+                    <p style="padding:5px;">          
+                </div>     
+
+        </form>   
+    </div> 
+</div> 
+
+  <br>
+  <h2 class="col-lg-3 mb-5 mb-lg-2 ">Lista de Usuarios</h2>
+  <table>
+      <thead>
+        <tr>
+            <th>ID</th>
+            <th>Apellido y Nombre</th>
+            <th>DNI</th>
+        </tr>
+        </thead>    
+        <tbody>
+         {% for row in data %}    
+                <tr>
+                    <td>{{row[0]}}</td>
+                    <td>{{row[1]}}</td>
+                    <td>{{row[2]}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}
