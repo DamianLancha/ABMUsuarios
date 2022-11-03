@@ -1,16 +1,16 @@
 from flask import Flask, request, session, redirect, url_for, render_template, flash
-from psycopg2 import connect
-import psycopg2 
-import psycopg2.extras
+
+from psycopg import connect
+
  
 app = Flask(__name__)
 app.secret_key = 'fdgfgdfgdsgs'
  
 DB_HOST = 'localhost'
 DB_PORT = 5432
-DB_NAME = 'db_personas'
+DB_NAME = 'postgres'
 DB_USER = 'postgres'
-DB_PASSWORD = 'admin'
+DB_PASSWORD = '1234'
 
 host = DB_HOST
 database = DB_NAME
@@ -19,7 +19,7 @@ password = DB_PASSWORD
 port = DB_PORT
 
 def get_db_connection():
-    conn = connect(host=host, database=database,
+    conn = connect(host=host, dbname=database,
                    user=username, password=password, port=port)
     return conn
 
@@ -36,7 +36,7 @@ def home():
  
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = conn.cursor()
 
     # Al presionar el botón login, si están completos los campos
     if request.method == 'POST' and 'usuario' in request.form and 'contraseña' in request.form:
@@ -52,12 +52,14 @@ def login():
         else:
             flash('Datos Incorrectos')
             return render_template('login.html')
+        
+   
 
         # Si existe y el usuario = contraseña = dni, inicio sesión
         if account and usuario == contraseña:
             # Creo datos de sesión para poder utilizarlos en otras rutas
             session['loggedin'] = True
-            session['id'] = account['id']
+            session['id'] = account[0]
             session['username'] = account[1]
             session['dni'] = account[2]
             return redirect(url_for('home'))
@@ -68,7 +70,7 @@ def login():
   
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = conn.cursor()
  
     # Al presionar el botón registrar, si están completos los campos
     if request.method == 'POST' and 'apellidoynombre' in request.form and 'dni' in request.form :
@@ -111,7 +113,7 @@ def logout():
   
 @app.route('/edit', methods=['GET', 'POST'])
 def edit(): 
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = conn.cursor()
    
     # Al presionar el botón guardar, si están completos los campos
     if request.method == 'POST' and 'apellidoynombre' in request.form and 'dni' in request.form :
@@ -161,7 +163,7 @@ def edit():
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete(): 
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = conn.cursor()
    
    # Al presionar el botón eliminar, si están completos los campos
     if request.method == 'POST' and 'apellidoynombre' in request.form and 'dni' in request.form :
@@ -212,7 +214,7 @@ def delete():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = conn.cursor()
  
     # Al presionar el botón buscar, si está completo el campo
     if request.method == 'POST' and 'apellidoynombre' in request.form:
@@ -237,7 +239,7 @@ def search():
 def userslist():
 
     # Busco en la base de datos todos los registros
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM users ORDER BY dni")
     data = cursor.fetchall()
     
